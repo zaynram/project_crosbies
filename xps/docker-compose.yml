@@ -44,17 +44,6 @@ x-ollama: &service-ollama
   volumes:
     - ollama_storage:/root/.ollama
 
-x-init-ollama: &init-ollama
-  image: ollama/ollama:latest
-  networks: ['n8n-ai']
-  container_name: ollama-pull-llama
-  volumes:
-    - ollama_storage:/root/.ollama
-  entrypoint: /bin/sh
-  command:
-    - "-c"
-    - "sleep 3; OLLAMA_HOST=ollama:11434 ollama pull granite3-moe:3b-instruct-q6_K"
-
 services:
 
   open-webui:
@@ -138,18 +127,7 @@ services:
       - 6333:6333
     volumes:
       - qdrant_storage:/qdrant/storage
-
-  ollama-cpu:
-    privileged: true
-    profiles: ["cpu"]
-    <<: *service-ollama
-
-  ollama-pull-llama-cpu:
-    profiles: ["cpu"]
-    <<: *init-ollama
-    depends_on:
-      - ollama-cpu
-
+      
   ipex-llm:
     image: intelanalytics/ipex-llm-inference-cpp-xpu:latest
     restart: unless-stopped
